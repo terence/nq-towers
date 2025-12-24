@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tower Defence Game</title>
+    <style>
+        body { background: #222; color: #fff; font-family: sans-serif; text-align: center; }
+        canvas { background: #333; display: block; margin: 20px auto; border: 2px solid #fff; }
+        #ui { margin: 10px; }
+        button { margin: 0 5px; }
+    </style>
+</head>
+<body>
+    <h1>Tower Defence Game</h1>
+    <div id="startScreen" style="position:fixed;left:0;top:0;width:100vw;height:100vh;background:#111d;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <h2>Welcome to Tower Defence!</h2>
+        <button id="startBtn" style="font-size:2em;padding:0.5em 2em;">Play</button>
+        <p style="margin-top:1em;">Build towers, defend your base, and survive as many waves as you can!</p>
+    </div>
+    <div id="ui">
+        <span id="money">Money: 100</span>
+        <span id="lives">Lives: 10</span>
+        <span id="wave">Wave: 1</span>
+        <br>
+        <label for="towerType">Tower Type:</label>
+        <select id="towerType">
+            <option value="basic">Basic (50)</option>
+            <option value="fast">Fast (60)</option>
+            <option value="strong">Strong (80)</option>
+            <option value="splash">Splash (100)</option>
+        </select>
+        <button id="build">Build Tower</button>
+        <button id="pauseBtn">Pause</button>
+        <span id="upgradeInfo">Click a tower to upgrade</span>
+    </div>
+    <canvas id="game" width="600" height="400"></canvas>
+    <audio id="bgm" src="https://cdn.pixabay.com/audio/2022/10/16/audio_12b6b6b6b6.mp3" loop></audio>
+    <audio id="shootSfx" src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b9b9b.mp3"></audio>
+    <audio id="enemyDieSfx" src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b9b9c.mp3"></audio>
+    <script src="game.js"></script>
+</body>
+</html>
