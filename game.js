@@ -326,9 +326,18 @@ document.addEventListener('DOMContentLoaded', () => {
             // Use pointerdown for universal click/tap
             btn.addEventListener('pointerdown', function(e) {
                 e.preventDefault();
+                const type = this.getAttribute('data-type');
+
+                // Tap the currently-selected tower again to exit placement mode.
+                if (placingTower && selectedTowerType === type) {
+                    placingTower = false;
+                    towerMenu.querySelectorAll('.tower-btn').forEach(b => b.style.outline = '');
+                    return;
+                }
+
                 towerMenu.querySelectorAll('.tower-btn').forEach(b => b.style.outline = '');
                 this.style.outline = '3px solid #fff';
-                selectedTowerType = this.getAttribute('data-type');
+                selectedTowerType = type;
                 placingTower = true;
             });
         });
@@ -362,6 +371,26 @@ canvas.addEventListener('click', e => {
     const { x, y } = clientPointToTile(e.clientX, e.clientY);
     // Tower placement
     if (placingTower) {
+        // If the user taps an existing tower while in placement mode, treat it as an upgrade tap.
+        for (let t of towers) {
+            if (t.x === x && t.y === y) {
+                let upgradeCost = 40 + t.level*30;
+                if (money >= upgradeCost && t.level < 5) {
+                    t.level++;
+                    money -= upgradeCost;
+                    upgradeInfo.textContent = `Upgraded to Lv${t.level}!`;
+                    setTimeout(()=>upgradeInfo.textContent = 'Click a tower to upgrade', 1200);
+                } else if (t.level >= 5) {
+                    upgradeInfo.textContent = 'Max level!';
+                    setTimeout(()=>upgradeInfo.textContent = 'Click a tower to upgrade', 1200);
+                } else {
+                    upgradeInfo.textContent = 'Not enough money!';
+                    setTimeout(()=>upgradeInfo.textContent = 'Click a tower to upgrade', 1200);
+                }
+                return;
+            }
+        }
+
         for (let p of path) if (p.x === x && p.y === y) return;
         for (let t of towers) if (t.x === x && t.y === y) return;
         let type = selectedTowerType;
@@ -370,7 +399,6 @@ canvas.addEventListener('click', e => {
             towers.push({x, y, type, cooldown: 0, level: 1});
             money -= cost;
         }
-        placingTower = false;
         return;
     }
     // Tower upgrade
