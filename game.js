@@ -416,10 +416,21 @@ function startGame() {
 }
 startBtn.addEventListener('click', startGame);
 // iOS Safari sometimes needs touchstart for overlays/buttons
+
+// iOS Safari sometimes blocks button events in overlays, so also listen on the overlay itself
 startBtn.addEventListener('touchstart', function(e) {
     e.preventDefault();
     startGame();
 }, { passive: false });
+if (startScreen) {
+    startScreen.addEventListener('touchend', function(e) {
+        // Only trigger if overlay is visible and game not running
+        if (startScreen.style.display !== 'none' && !running) {
+            e.preventDefault();
+            startGame();
+        }
+    }, { passive: false });
+}
 
 // Pause/resume logic
 pauseBtn.addEventListener('click', () => {
