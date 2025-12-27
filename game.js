@@ -1,5 +1,7 @@
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
+window.__NQ_TOWERS_BUILD__ = '2025-12-27';
+console.log('[nq-towers] build', window.__NQ_TOWERS_BUILD__);
 const moneySpan = document.getElementById('money');
 const livesSpan = document.getElementById('lives');
 // const buildBtn = document.getElementById('build'); // Build button removed
@@ -411,9 +413,11 @@ function startGame() {
 window.addEventListener('DOMContentLoaded', startGame);
 
 // Pause/resume logic
-pauseBtn.addEventListener('click', () => {
-    if (!running) return;
-    paused = !paused;
-    pauseBtn.textContent = paused ? 'Resume' : 'Pause';
-    if (!paused) gameLoop();
-});
+if (pauseBtn) {
+    pauseBtn.addEventListener('click', () => {
+        if (!running) return;
+        paused = !paused;
+        pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+        if (!paused) gameLoop();
+    });
+}
