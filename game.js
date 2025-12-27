@@ -2,7 +2,7 @@ const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 const moneySpan = document.getElementById('money');
 const livesSpan = document.getElementById('lives');
-const buildBtn = document.getElementById('build');
+// const buildBtn = document.getElementById('build'); // Build button removed
 const towerMenu = document.getElementById('towerMenu');
 let selectedTowerType = 'basic';
 const waveSpan = document.getElementById('wave');
@@ -322,7 +322,6 @@ canvas.addEventListener('click', e => {
             money -= cost;
         }
         placingTower = false;
-        buildBtn.disabled = false;
         return;
     }
     // Tower menu selection logic: click to build
@@ -332,9 +331,7 @@ canvas.addEventListener('click', e => {
                 towerMenu.querySelectorAll('.tower-btn').forEach(b => b.style.outline = '');
                 this.style.outline = '3px solid #fff';
                 selectedTowerType = this.getAttribute('data-type');
-                // Try to build tower at next valid location (prompt user to tap map)
                 placingTower = true;
-                buildBtn.disabled = true;
             });
         });
         // Default select first
@@ -375,9 +372,8 @@ function startGame() {
     placingTower = false;
     paused = false;
     running = true;
-    startScreen.style.display = 'none';
-    buildBtn.disabled = false;
-    pauseBtn.textContent = 'Pause';
+    if (startScreen) startScreen.style.display = 'none';
+    if (pauseBtn) pauseBtn.textContent = 'Pause';
     gameLoop();
 }
 startBtn.addEventListener('click', startGame);
