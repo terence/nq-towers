@@ -3,7 +3,8 @@ const ctx = canvas.getContext('2d');
 const moneySpan = document.getElementById('money');
 const livesSpan = document.getElementById('lives');
 const buildBtn = document.getElementById('build');
-const towerTypeSelect = document.getElementById('towerType');
+const towerMenu = document.getElementById('towerMenu');
+let selectedTowerType = 'basic';
 const waveSpan = document.getElementById('wave');
 const upgradeInfo = document.getElementById('upgradeInfo');
 const bgm = document.getElementById('bgm');
@@ -314,7 +315,7 @@ canvas.addEventListener('click', e => {
     if (placingTower) {
         for (let p of path) if (p.x === x && p.y === y) return;
         for (let t of towers) if (t.x === x && t.y === y) return;
-        let type = towerTypeSelect.value;
+        let type = selectedTowerType;
         let cost = type === 'fast' ? 60 : type === 'strong' ? 80 : type === 'splash' ? 100 : 50;
         if (money >= cost) {
             towers.push({x, y, type, cooldown: 0, level: 1});
@@ -323,6 +324,21 @@ canvas.addEventListener('click', e => {
         placingTower = false;
         buildBtn.disabled = false;
         return;
+    }
+    // Tower menu selection logic: click to build
+    if (towerMenu) {
+        towerMenu.querySelectorAll('.tower-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                towerMenu.querySelectorAll('.tower-btn').forEach(b => b.style.outline = '');
+                this.style.outline = '3px solid #fff';
+                selectedTowerType = this.getAttribute('data-type');
+                // Try to build tower at next valid location (prompt user to tap map)
+                placingTower = true;
+                buildBtn.disabled = true;
+            });
+        });
+        // Default select first
+        towerMenu.querySelector('.tower-btn[data-type="basic"]').style.outline = '3px solid #fff';
     }
     // Tower upgrade
     for (let t of towers) {
@@ -345,10 +361,7 @@ canvas.addEventListener('click', e => {
     }
 });
 
-buildBtn.addEventListener('click', () => {
-    placingTower = true;
-    buildBtn.disabled = true;
-});
+// Remove buildBtn click logic (no longer needed)
 
 
 // Start screen logic
