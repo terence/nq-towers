@@ -10,8 +10,7 @@ const upgradeInfo = document.getElementById('upgradeInfo');
 const bgm = document.getElementById('bgm');
 const shootSfx = document.getElementById('shootSfx');
 const enemyDieSfx = document.getElementById('enemyDieSfx');
-const startScreen = document.getElementById('startScreen');
-const startBtn = document.getElementById('startBtn');
+// Intro screen and Play button removed
 const pauseBtn = document.getElementById('pauseBtn');
 // Play background music on first user interaction
 let bgmStarted = false;
@@ -399,7 +398,6 @@ canvas.addEventListener('click', e => {
 // Remove buildBtn click logic (no longer needed)
 
 
-// Start screen logic
 function startGame() {
     money = 100;
     lives = 10;
@@ -410,27 +408,10 @@ function startGame() {
     placingTower = false;
     paused = false;
     running = true;
-    if (startScreen) startScreen.style.display = 'none';
     if (pauseBtn) pauseBtn.textContent = 'Pause';
     gameLoop();
 }
-startBtn.addEventListener('click', startGame);
-// iOS Safari sometimes needs touchstart for overlays/buttons
-
-// iOS Safari sometimes blocks button events in overlays, so also listen on the overlay itself
-startBtn.addEventListener('touchstart', function(e) {
-    e.preventDefault();
-    startGame();
-}, { passive: false });
-if (startScreen) {
-    startScreen.addEventListener('touchend', function(e) {
-        // Only trigger if overlay is visible and game not running
-        if (startScreen.style.display !== 'none' && !running) {
-            e.preventDefault();
-            startGame();
-        }
-    }, { passive: false });
-}
+window.addEventListener('DOMContentLoaded', startGame);
 
 // Pause/resume logic
 pauseBtn.addEventListener('click', () => {
