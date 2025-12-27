@@ -7,21 +7,10 @@ const towerMenu = document.getElementById('towerMenu');
 let selectedTowerType = 'basic';
 const waveSpan = document.getElementById('wave');
 const upgradeInfo = document.getElementById('upgradeInfo');
-const bgm = document.getElementById('bgm');
-const shootSfx = document.getElementById('shootSfx');
-const enemyDieSfx = document.getElementById('enemyDieSfx');
+// Audio elements removed for silent game
 // Intro screen and Play button removed
 const pauseBtn = document.getElementById('pauseBtn');
-// Play background music on first user interaction
-let bgmStarted = false;
-function startBgm() {
-    if (!bgmStarted) {
-        bgm.volume = 0.3;
-        bgm.play();
-        bgmStarted = true;
-    }
-}
-document.body.addEventListener('mousedown', startBgm, { once: true });
+// Background music logic removed for silent game
 
 const TILE_SIZE = 40;
 const MAP_COLS = 15;
@@ -235,7 +224,7 @@ function updateTowers() {
                         splashRadius: t.type === 'splash' ? 40 + t.level*10 : 0
                     });
                     // Play shoot sound
-                    if (shootSfx) { try { shootSfx.currentTime = 0; shootSfx.play(); } catch(e){} }
+                    // shoot sound removed
                     t.cooldown = t.type === 'fast' ? 10 : t.type === 'strong' ? 40 : t.type === 'splash' ? 50 : 30;
                     break;
                 }
@@ -258,13 +247,13 @@ function updateBullets() {
                     if (dx*dx + dy*dy < b.splashRadius*b.splashRadius) {
                         e.hp -= b.damage;
                         e._hitFlash = 3;
-                        if (e.hp <= 0 && !playedDeath) { money += e.reward || 10; playedDeath = true; if (enemyDieSfx) { try { enemyDieSfx.currentTime = 0; enemyDieSfx.play(); } catch(e){} } }
+                        if (e.hp <= 0 && !playedDeath) { money += e.reward || 10; playedDeath = true; }
                     }
                 }
             } else {
                 b.target.hp -= b.damage;
                 b.target._hitFlash = 3;
-                if (b.target.hp <= 0) { money += b.target.reward || 10; if (enemyDieSfx) { try { enemyDieSfx.currentTime = 0; enemyDieSfx.play(); } catch(e){} } }
+                if (b.target.hp <= 0) { money += b.target.reward || 10; }
             }
             b.hit = true;
         }
@@ -298,11 +287,23 @@ function gameLoop() {
         ctx.font = '48px sans-serif';
         ctx.fillText('Game Over', 180, 200);
         running = false;
-        setTimeout(()=>{
-            startScreen.style.display = 'flex';
-            startBtn.textContent = 'Restart';
+        // Intro/restart UI was removed; auto-restart after a short pause.
+        setTimeout(() => {
+            if (!running) startGame();
         }, 1200);
     }
+}
+
+function clientPointToTile(clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const canvasX = (clientX - rect.left) * scaleX;
+    const canvasY = (clientY - rect.top) * scaleY;
+    return {
+        x: Math.floor(canvasX / TILE_SIZE),
+        y: Math.floor(canvasY / TILE_SIZE),
+    };
 }
 
 
@@ -339,9 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     canvas.addEventListener('drop', function(e) {
         e.preventDefault();
-        const rect = canvas.getBoundingClientRect();
-        const x = Math.floor((e.clientX - rect.left) / TILE_SIZE);
-        const y = Math.floor((e.clientY - rect.top) / TILE_SIZE);
+        const { x, y } = clientPointToTile(e.clientX, e.clientY);
         let type = e.dataTransfer.getData('text/plain') || selectedTowerType;
         let cost = type === 'fast' ? 60 : type === 'strong' ? 80 : type === 'splash' ? 100 : 50;
         if (
@@ -358,9 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Canvas click for placement and upgrade
 canvas.addEventListener('click', e => {
-    const rect = canvas.getBoundingClientRect();
-    const x = Math.floor((e.clientX - rect.left) / TILE_SIZE);
-    const y = Math.floor((e.clientY - rect.top) / TILE_SIZE);
+    const { x, y } = clientPointToTile(e.clientX, e.clientY);
     // Tower placement
     if (placingTower) {
         for (let p of path) if (p.x === x && p.y === y) return;

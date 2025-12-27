@@ -5,10 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tower Defence Game</title>
     <style>
-        body { background: #222; color: #fff; font-family: sans-serif; text-align: center; }
-        canvas { background: #333; display: block; margin: 20px auto; border: 2px solid #fff; }
-        #ui { margin: 10px; }
-        button { margin: 0 5px; }
+        body { background: #222; color: #fff; font-family: sans-serif; text-align: center; margin: 0; }
+        canvas {
+            background: #333;
+            display: block;
+            margin: 12px auto;
+            border: 2px solid #fff;
+            max-width: calc(100vw - 24px);
+            height: auto;
+            touch-action: manipulation;
+        }
+        #ui { margin: 10px; padding: 0 12px; }
+        button { margin: 0 5px; touch-action: manipulation; }
     </style>
 </head>
 <body>
@@ -42,9 +50,7 @@
         <span id="upgradeInfo">Click a tower to upgrade</span>
     </div>
     <canvas id="game" width="600" height="400"></canvas>
-    <audio id="bgm" src="https://cdn.pixabay.com/audio/2022/10/16/audio_12b6b6b6b6.mp3" loop></audio>
-    <audio id="shootSfx" src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b9b9b.mp3"></audio>
-    <audio id="enemyDieSfx" src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b9b9c.mp3"></audio>
+    <!-- Audio elements removed for silent game -->
     <script src="game.js"></script>
 </body>
 </html>
