@@ -415,6 +415,11 @@ function startGame() {
     gameLoop();
 }
 startBtn.addEventListener('click', startGame);
+// iOS Safari sometimes needs touchstart for overlays/buttons
+startBtn.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    startGame();
+}, { passive: false });
 
 // Pause/resume logic
 pauseBtn.addEventListener('click', () => {
