@@ -307,6 +307,57 @@ function gameLoop() {
 }
 
 
+
+// Tower menu event listeners: pointer events for best compatibility
+document.addEventListener('DOMContentLoaded', () => {
+    if (towerMenu) {
+        towerMenu.querySelectorAll('.tower-btn').forEach(btn => {
+            btn.setAttribute('draggable', 'true');
+            // Drag start for drag-and-drop
+            btn.addEventListener('dragstart', function(e) {
+                selectedTowerType = this.getAttribute('data-type');
+                e.dataTransfer.setData('text/plain', selectedTowerType);
+                if (this.querySelector('svg')) {
+                    e.dataTransfer.setDragImage(this.querySelector('svg'), 16, 16);
+                }
+            });
+            // Use pointerdown for universal click/tap
+            btn.addEventListener('pointerdown', function(e) {
+                e.preventDefault();
+                towerMenu.querySelectorAll('.tower-btn').forEach(b => b.style.outline = '');
+                this.style.outline = '3px solid #fff';
+                selectedTowerType = this.getAttribute('data-type');
+                placingTower = true;
+            });
+        });
+        // Default select first
+        towerMenu.querySelector('.tower-btn[data-type="basic"]').style.outline = '3px solid #fff';
+    }
+
+    // Canvas drag-and-drop
+    canvas.addEventListener('dragover', function(e) {
+        e.preventDefault();
+    });
+    canvas.addEventListener('drop', function(e) {
+        e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        const x = Math.floor((e.clientX - rect.left) / TILE_SIZE);
+        const y = Math.floor((e.clientY - rect.top) / TILE_SIZE);
+        let type = e.dataTransfer.getData('text/plain') || selectedTowerType;
+        let cost = type === 'fast' ? 60 : type === 'strong' ? 80 : type === 'splash' ? 100 : 50;
+        if (
+            !path.some(p => p.x === x && p.y === y) &&
+            !towers.some(t => t.x === x && t.y === y) &&
+            money >= cost
+        ) {
+            towers.push({x, y, type, cooldown: 0, level: 1});
+            money -= cost;
+            drawMap();
+        }
+    });
+});
+
+// Canvas click for placement and upgrade
 canvas.addEventListener('click', e => {
     const rect = canvas.getBoundingClientRect();
     const x = Math.floor((e.clientX - rect.left) / TILE_SIZE);
@@ -323,19 +374,6 @@ canvas.addEventListener('click', e => {
         }
         placingTower = false;
         return;
-    }
-    // Tower menu selection logic: click to build
-    if (towerMenu) {
-        towerMenu.querySelectorAll('.tower-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                towerMenu.querySelectorAll('.tower-btn').forEach(b => b.style.outline = '');
-                this.style.outline = '3px solid #fff';
-                selectedTowerType = this.getAttribute('data-type');
-                placingTower = true;
-            });
-        });
-        // Default select first
-        towerMenu.querySelector('.tower-btn[data-type="basic"]').style.outline = '3px solid #fff';
     }
     // Tower upgrade
     for (let t of towers) {
